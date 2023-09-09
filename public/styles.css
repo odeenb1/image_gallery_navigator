@@ -1,0 +1,189 @@
+:root {
+  --min-gallery-height: 80vh; /* Adjust this value as needed */
+  --tabs-height: 40px;
+  --gallery-image-size: 110px;
+}
+/* Basic reset for margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  height: calc(var(--tabs-height));
+}
+
+.tab {
+  padding: 10px 20px;
+  background-color: lightgray;
+  color: black;
+  cursor: pointer;
+}
+
+.tab.active {
+  background-color: yellow;
+  color: black;
+}
+
+/* Content sections styling */
+.content {
+  display: flex;
+  width: 100%;
+}
+
+.content-right {
+  flex: 1;
+  display: none;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  background-color: lightblue;
+}
+
+.content-left {
+  flex: 1;
+  background-color: lightgray;
+  border: 1px solid #ccc;
+  overflow-y: auto;
+  max-height: 100vh;
+  overflow: hidden; /* Prevent overflow from affecting other elements */
+  /* margin-top: 10px; */ /* Add top margin to create space for tab words */
+}
+
+
+.image-container {
+  position: relative; /* Make sure the position is relative for absolute positioning */
+  display: inline-block; /* Display as inline block to keep images side by side */
+  margin: 5px; /* Add some margin between images */
+  width: 120px; /* Limit the width to 130px */
+  height: 120px;
+  /* border: 5px solid transparent; */
+  overflow: hidden;
+  cursor: pointer;
+}
+
+/* Add a colored bounding box behind the image */
+.image-container::before {
+  content: ''; /* Create a pseudo-element */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  background-color: green; /* Choose your desired color */
+  opacity: 1; /* Adjust the opacity as needed */
+  z-index: -1; /* Place the bounding box behind the image */
+  /* pointer-events: none;*/ /* Allow clicking through the bounding box */
+}
+
+.gallery-image {
+	max-height: calc(var(--gallery-image-size));
+	max-width: calc(var(--gallery-image-size));
+	align-items: center;
+	justify-content: center;
+}
+
+/* Arrow bars styling */
+.arrow {
+  flex: 0 0 5%;
+  display: flex;
+  align-items: top;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  color: black;
+  /* height: (calc(100vh - var(--tabs-height)); */ /* Set the height to 100% of the viewport height */
+  height: 90vh;
+}
+
+.left-arrow {
+  /* position: fixed; */
+  /* left: 0; */
+  background-color: lightgreen; /* Change to light red for right arrow */
+  top:40px;
+  left:0px;
+  bottom:0px;
+  width:5vh;
+}
+
+.right-arrow {
+  /* position: fixed; */
+  /* right: 0; */
+  background-color: lightcoral; /* Change to light red for right arrow */
+  top:40px;
+  right:0px;
+  bottom:0px;
+  width:5vh;
+}
+
+/* Middle content styling */
+#staticContent {
+  width: 100%; /* Full width */
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Calculate the height of the gallery-middle section */
+.gallery-middle {
+  left: 8vh;
+  right: 8vh;
+  bottom:0px;
+  top:40px;
+/*  width: 90%; */ /* 90% of viewport width */
+/*  height: 90vh; */ /* Subtract the height of the tabs area */
+  position: fixed;
+  text-align: center;
+/*  padding: 40px; */
+  overflow: auto;
+}
+
+
+.infotab {
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	justify-content: left;
+}
+
+#jumpInput {
+	width: 50px; /* Adjust the width as needed */
+	height: 30px;
+	margin-right: 5px;
+}
+
+.actiontab {
+	display: flex;
+	flex-directory: column;
+	margin-left: 10px;
+}
+
+#saveAllImagesButton,
+#jumpButton {
+	margin-right: 5px; /* Add some space between the buttons */
+	font-size: 18px;
+	height: 30px;
+}
+
+.jump-placeholder {
+  width: 0;
+  height: 0;
+  visibility: hidden;
+}
+
+.image-container.selected {
+  background-color: orange; /* Set the background color to orange */
+}
+
+.image-container.saved {
+  background-color: red;
+}

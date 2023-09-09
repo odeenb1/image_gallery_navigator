@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>IMX.TO Navigator</title>
+</head>
+<body>
+  <div class="tabs">
+    <div class="tab" id="galleryTab">Gallery</div>
+    <div class="tab" id="imagesTab">Images</div>
+	<div class="infotab" id="galleryinfo">
+		<div>
+			<span id="startIndex">start</span>
+		</div>
+		<div>
+			<span id="endIndex">end</span>
+		</div>
+	</div>
+	<div class="infotab" id="infoTab">
+		<div>
+			<span id="selectedURL">current URL</span>
+		</div>
+		<div>
+			<span id="selectedTitle">current Title</span>
+		</div>
+	</div>
+	<div class="actiontab" id="actionTab">
+		<div class="jump-placeholder"></div>
+		<input type="text" id="jumpInput" placeholder="abcd">
+		<div class="jump-placeholder"></div>
+		<button id="jumpButton">Jump</button>
+		<div class="jump-placeholder"></div>
+		<button id="saveAllImagesButton">SaveAll</button>
+		<div class="jump-placeholder"></div>
+		<span id="numberSaved"></span>
+		<div class="jump-placeholder"></div>
+	</div>
+  </div>
+
+  <div class="content">
+	<div class="content-left" id="contentLeft">
+	  <div id="staticContent">
+		  <div class="arrow left-arrow" id="leftArrow">
+			&lt;=
+		  </div>
+		  <div class="gallery-middle" id="galleryMiddle">
+			<!-- HTML content to be filled later -->
+			<div class="box"></div>
+		  </div>
+		  <div class="arrow right-arrow" id="rightArrow">
+			=>
+		  </div>
+	  </div>
+	</div>
+    <div class="content-right" id="contentRight">
+      <!-- Content for the Images tab -->
+	  here are the full images for the selection!
+    </div>
+  </div>
+
+  <script src="script_pixhost.js"></script>
+</body>
+</html>

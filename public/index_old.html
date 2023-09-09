@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMX.TO Navigator</title>
+    <style>
+        body {
+           font-family: Arial, sans-serif;
+           text-align: center;
+			margin: 0;
+        }
+		
+		.navigation-bar {
+			display: flex;
+			align-items: center; /* Vertically center the elements */
+			flex-direction: row;
+			justify-content: space-between;
+			padding: 10px;
+			background-color: #f0f0f0;
+		}
+		
+		.navigation-controls {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			margin-top: 5px;
+		}
+		
+		#jumpInput {
+			width: 50px; /* Adjust the width as needed */
+			margin-right: 5px;
+		}
+
+		#saveAllImagesButton,
+		#jumpButton,
+		#leftButton,
+		#left2Button,
+		#right2Button,
+		#rightButton,
+		#prevButton,
+		#nextButton	{
+			/* margin-left: 5px; Add some space between the buttons */
+			font-size: 18px;
+		}
+			
+		#webFrame {
+        width: 100%;
+        height: calc(100vh - 220px); /* Adjust this value as needed based on your content */
+        border: none;
+		}
+		
+		#currentURL {
+			margin-right: 5px;
+		}
+		
+		.frames-container {
+		   display: flex;
+		   flex-direction: column;
+		   align-items: center;
+			justify-content: center;
+		}
+
+		.preview-frames {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+			padding: 2px;
+		}
+		
+		.frame {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
+			/* width: 8%; */ /* Adjust as needed */
+			width: 120px;
+			/* height: 10vh; */
+			height: 120px;
+			background-color: #f0f0f0;
+		}
+
+		.center-frame {
+			background-color: #e0e0e0;
+			text-align: center;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+
+		.left-frame {
+			background-color: #e0e0e0; /* Different background color for left frame */
+			text-align: left;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+
+		.right-frame {
+			background-color: #d0d0d0; /* Different background color for right frame */
+			text-align: right;
+			padding-left: 2px;
+			padding-right: 2px;
+		}
+
+		img {
+			max-width: 11vw; /* Set max width to prevent image overflow */
+			max-height: 110px; /* Set max height to 80% of viewport height */
+			margin-bottom: 2px;
+		}
+		
+		.xleft-frame img,
+		.xright-frame img {
+			max-width: 11vw;
+			max-height: 110px;
+			display: block;
+			margin: 0 auto;
+		}
+
+		.context-menu {
+			position: absolute;
+			background: white;
+			border: 1px solid #ccc;
+			display: none;
+		}
+
+		.context-menu ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+
+        .context-menu li {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .context-menu li:hover {
+            background: #f0f0f0;
+        }		
+		
+		/* Add this style to create a vertical layout for the prev and next buttons */
+		.left-buttons {
+			display: flex;
+			flex-direction: row;
+			align-items: left;
+			justify-content: left;
+		}
+
+		.right-buttons {
+			display: flex;
+			flex-direction: row;
+			align-items: right;
+			justify-content: right;
+		}
+
+		.center-console {
+			display: flex;
+			flex-direction: column;
+			align-items: left;
+			justify-content: left;
+		}
+
+		/* Adjust spacing as needed */
+		.left-buttons button {
+			margin: 2px;
+		}
+
+		.right-buttons button {
+			margin: 2px;
+		}
+    </style>
+</head>
+<body>
+	<div class="frames-container">
+		<div class="preview-frames">
+			<button id="prevButton">Prev</button>
+			<img id="left3FrameImage" src="" alt="Left3 Frame Image">
+			<img id="left2FrameImage" src="" alt="Left2 Frame Image">
+			<img id="leftFrameImage" src="" alt="Left Frame Image">
+			<img id="centerFrameImage" src="" alt="Center Frame Image">
+			<img id="rightFrameImage" src="" alt="Right Frame Image">
+			<img id="right2FrameImage" src="" alt="Right2 Frame Image">
+			<img id="right3FrameImage" src="" alt="Right3 Frame Image">
+			<button id="nextButton">Next</button>
+		</div>
+		<div class="navigation-bar">
+			<div class="navigation-controls">
+				<div class="center-console">
+					<div>
+						<input type="checkbox" id="loadallCheckbox">
+						<span id="LOAD">LOAD</span>
+						<input type="text" id="jumpInput" placeholder="abcd">
+						<button id="jumpButton">Jump</button>
+						<button id="saveAllImagesButton">SaveAll</button>
+						<span id="numberSaved"></span>
+					</div>
+					<div>
+						<span id="currentURL"></span>
+					</div>
+					<div>
+						<span id="currentTitle"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<iframe id="webFrame" src="" frameborder="0" onerror="handleFrameError()"></iframe>
+	<div id="customContextMenu" class="context-menu">
+		<ul>
+			<li id="downloadImage">Download Image</li>
+		</ul>
+	</div>
+    <script>
+        const currentIntegerDisplay = document.getElementById('currentInteger');
+        const prevValueDisplay = document.getElementById('prevValue');
+        const nextValueDisplay = document.getElementById('nextValue');
+        const alphanumericValueDisplay = document.getElementById('alphanumericValue');
+        const leftButton = document.getElementById('leftButton');
+        const rightButton = document.getElementById('rightButton');
+        const left2Button = document.getElementById('left2Button');
+        const right2Button = document.getElementById('right2Button');
+
+		let loadall = false;
+        //let currentInteger = 513216 ;
+		let currentInteger = 1096940 ;
+		//let currentAlphanumeric = 'b000' ;
+		let currentAlphanumeric = 'niek' ;
+
+        //let currentInteger = `<%= currentInteger %>` ;
+		//let currentAlphanumeric = '`<%= alphanumericValue %>`' ;
+
+		//kuzq
+		//const saveAllImagesButton = document.getElementById('saveAllImagesButton');
+		//saveAllImagesButton.addEventListener('click', saveAllImages);
+		
+		/*
+		const eventSource = new EventSource('/saveImages?url=<URL>&currentInteger=<integer>&currentAlphanumeric=<alphanumeric>');
+		eventSource.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			if (typeof data === 'number') {
+				// Update the total number of images
+				document.getElementById('numberSaved').textContent = data;
+			} 
+		};
+
+		/*
+		eventSource.onerror = (error) => {
+			console.error('Error with EventSource:', error);
+		};
+		*/
+		
+		
+		const jumpInput = document.getElementById('jumpInput');
+		const jumpButton = document.getElementById('jumpButton');
+
+		jumpButton.addEventListener('click', () => {
+			const newAlphanumericValue = jumpInput.value.toLowerCase();
+			const newIntegerValue = alphanumericToInteger(newAlphanumericValue);
+			if (!isNaN(newIntegerValue)) {
+				currentInteger = newIntegerValue;
+				updateDisplays();
+			}
+		});
+		
+		LOAD.addEventListener('click', () => {
+			if (loadallCheckbox.checked) {
+				loadallCheckbox.checked = false;
+			}
+			else {
+				loadallCheckbox.checked = true;
+			}
+			loadall = loadallCheckbox.checked; // Get the current state of the checkbox
+			// You can use the isChecked value in your code to perform actions based on the checkbox state
+			//console.log('Checkbox is checked:', isChecked);
+			updateDisplays();
+		});
+		
+		saveAllImagesButton.addEventListener('click', () => {
+			document.getElementById('numberSaved').textContent = "Saving...";
+			saveAllImages();
+		});
+		
+		const loadallCheckbox = document.getElementById('loadallCheckbox');
+
+		// Listen for changes to the checkbox state
+		loadallCheckbox.addEventListener('change', () => {
+			loadall = loadallCheckbox.checked; // Get the current state of the checkbox
+			// You can use the isChecked value in your code to perform actions based on the checkbox state
+			//console.log('Checkbox is checked:', isChecked);
+			updateDisplays();
+		});
+
+
+        function integerToAlphanumeric(integer) {
+            const characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+            const base = characters.length;
+            let result = '';
+
+            while (integer > 0) {
+                const remainder = integer % base;
+                result = characters[remainder] + result;
+                integer = Math.floor(integer / base);
+            }
+
+            while (result.length < 4) {
+                result = '0' + result;
+            }
+
+            return result;
+        }
+		
+		function alphanumericToInteger(alphanumericValue) {
+			const base = 36; // 26 letters + 10 digits
+			let integerValue = 0;
+
+			for (let i = 0; i < alphanumericValue.length; i++) {
+				const char = alphanumericValue[i];
+				const digitValue = parseInt(char, base);
+				if (!isNaN(digitValue)) {
+					integerValue = integerValue * base + digitValue;
+				} else {
+					const letterValue = char.charCodeAt(0) - 'a'.charCodeAt(0) + 10;
+					integerValue = integerValue * base + letterValue;
+				}
+			}
+
+			return integerValue;
+		}
+
+        prevButton.addEventListener('click', () => {
+            if (currentInteger > 7) {
+                currentInteger = currentInteger - 7;
+                updateDisplays();
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (currentInteger < 1679609) {
+                currentInteger = currentInteger + 7;
+				updateDisplays();
+			}
+        });
+
+		left3FrameImage.addEventListener('click', () => {
+            if (currentInteger > 3) {
+                currentInteger = currentInteger - 3;
+                updateDisplays();
+            }
+        });
+		left2FrameImage.addEventListener('click', () => {
+            if (currentInteger > 2) {
+                currentInteger = currentInteger - 2;
+                updateDisplays();
+            }
+        });
+		leftFrameImage.addEventListener('click', () => {
+            if (currentInteger > 1) {
+                currentInteger = currentInteger - 1;
+                updateDisplays();
+            }
+        });
+		rightFrameImage.addEventListener('click', () => {
+            if (currentInteger < 1679609) {
+                currentInteger = currentInteger + 1;
+				updateDisplays();
+			}
+        });
+		right2FrameImage.addEventListener('click', () => {
+            if (currentInteger < 1679609) {
+                currentInteger = currentInteger + 2;
+				updateDisplays();
+			}
+        });
+		right3FrameImage.addEventListener('click', () => {
+            if (currentInteger < 1679609) {
+                currentInteger = currentInteger + 3;
+				updateDisplays();
+			}
+        });
+
+
+		function downloadImage(imageUrl, filename) {
+			const link = document.createElement('a');
+			link.href = imageUrl;
+			link.download = filename;
+			link.click();
+		}
+		
+		function saveAllImages() {
+			const alphanumericValue = integerToAlphanumeric(currentInteger);
+			currentAlphanumeric = alphanumericValue;
+			save_url = `/saveImages?url=https://imx.to/g/${alphanumericValue}&currentInteger=${currentInteger}&currentAlphanumeric=${currentAlphanumeric}`;
+			fetch(save_url)
+			   .then(response => response.json())
+			   .then(data => {
+				   const imgCount = data.imgCount;
+
+					// Update currentURL span content with the current URL value
+					document.getElementById('numberSaved').textContent = `${imgCount} saved.`;
+				})
+			   .catch(error => {
+				   console.error('Error fetching image URLs:', error);
+			   });
+
+		}
+
+		function showCustomContextMenu(x, y, imageUrl, filename) {
+			const customContextMenu = document.getElementById('customContextMenu');
+			const downloadItem = document.getElementById('downloadImage');
+
+			// Position the context menu
+			customContextMenu.style.left = `${x}px`;
+			customContextMenu.style.top = `${y}px`;
+
+			// Show the context menu
+			customContextMenu.style.display = 'block';
+
+			// Handle the download item click
+			downloadItem.addEventListener('click', () => {
+				downloadImage(imageUrl, filename);
+				customContextMenu.style.display = 'none';
+			});
+
+			// Hide the context menu when clicking outside
+			window.addEventListener('click', () => {
+				customContextMenu.style.display = 'none';
+			});
+		}
+		
+		function updateNavLRFrame(url, frame_image_id) {
+			const leftFrameImage = document.getElementById(frame_image_id);
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					const firstImgSrc = data.imgSrcList[0]; // Get the URL of the first image
+		
+					// Extract the actual HTTP URL from the firstImgSrc
+					const firstImgUrl = firstImgSrc.match(/src="([^"]+)"/)[1];
+
+					if (firstImgUrl == null) {
+						leftFrameImage.src = "/No_Image_Available.jpg";
+					}
+					else {
+						leftFrameImage.src = firstImgUrl // Replace with your image URL
+					}
+				})
+				.catch(error => {
+					leftFrameImage.src = "/No_Image_Available.jpg";
+					console.error('Error fetching image URLs:', error);
+				});			
+		}
+		
+		function updateDisplays() {
+			const alphanumericValue = integerToAlphanumeric(currentInteger);
+			currentAlphanumeric = alphanumericValue;
+			document.getElementById('numberSaved').textContent = "";
+			document.getElementById('currentURL').textContent = `${currentInteger}:${alphanumericValue}`;
+
+			calc_url = '';
+			const cur_alphanumericValue = integerToAlphanumeric(currentInteger);
+			const cur_calc_url = `/getFirstImage?url=https://imx.to/g/${cur_alphanumericValue}`;
+
+			const prev_alphanumericValue = integerToAlphanumeric(currentInteger-1);
+			const prev_calc_url = `/getFirstImage?url=https://imx.to/g/${prev_alphanumericValue}`;
+
+			const next_alphanumericValue = integerToAlphanumeric(currentInteger+1);
+			const next_calc_url = `/getFirstImage?url=https://imx.to/g/${next_alphanumericValue}`;
+
+			const prev2_alphanumericValue = integerToAlphanumeric(currentInteger-2);
+			const prev2_calc_url = `/getFirstImage?url=https://imx.to/g/${prev2_alphanumericValue}`;
+
+			const next2_alphanumericValue = integerToAlphanumeric(currentInteger+2);
+			const next2_calc_url = `/getFirstImage?url=https://imx.to/g/${next2_alphanumericValue}`;
+
+			const prev3_alphanumericValue = integerToAlphanumeric(currentInteger-3);
+			const prev3_calc_url = `/getFirstImage?url=https://imx.to/g/${prev3_alphanumericValue}`;
+
+			const next3_alphanumericValue = integerToAlphanumeric(currentInteger+3);
+			const next3_calc_url = `/getFirstImage?url=https://imx.to/g/${next3_alphanumericValue}`;
+
+			// currentIntegerDisplay.textContent = currentInteger;
+			// alphanumericValueDisplay.textContent = calc_url;
+			//webFrame.src = calc_url;
+			
+			updateNavLRFrame(prev3_calc_url, 'left3FrameImage');
+			updateNavLRFrame(prev2_calc_url, 'left2FrameImage');
+			updateNavLRFrame(prev_calc_url, 'leftFrameImage');
+			updateNavLRFrame(cur_calc_url, 'centerFrameImage');
+			updateNavLRFrame(next_calc_url, 'rightFrameImage');
+			updateNavLRFrame(next2_calc_url, 'right2FrameImage');
+			updateNavLRFrame(next3_calc_url, 'right3FrameImage');
+			
+			// Fetch the content of the URL
+			if (loadall) {
+				calc_options = `currentInteger=${currentInteger}&currentAlphanumeric=${currentAlphanumeric}`;
+				calc_url = `/getImages?url=https://imx.to/g/${alphanumericValue}&${calc_options}`;
+
+				fetch(calc_url)
+				   .then(response => response.json())
+				   .then(data => {
+					   const currentTitle = data.title;
+					   const imgSrcList = data.imgSrcList;
+						//const imgTags = imgSrcList.map(src => `<img src="${src}" />`).join('');
+						//const imgTags = imgSrcList.map(src => `${src}`).join(',');
+						//const commaSeparatedList = imgSrcList.join(', ');
+						const imgUrls = imgSrcList.map(src => src.match(/src="([^"]+)"/)[1]);
+						
+						//const modifiedList = imgSrcList.map(src => src.replace('to/u/t', 'to/u/i'));
+						const modifiedUrls = imgUrls.map(src => src.replace('to/u/t', 'to/u/i'));
+
+						// Create anchor elements with modified URLs in href and original URLs in img src
+						const anchorTags = modifiedUrls.map((modifiedSrc, index) => `
+							<a href="${modifiedSrc}" target="_blank">
+								<img src="${imgUrls[index]}" style="width:auto;height:auto;max-height:150px;max-width:150px"/>
+							</a>`).join('');
+
+						// Update currentURL span content with the current URL value
+						document.getElementById('currentTitle').textContent = `${currentTitle}`;
+					
+						// Update iframe content with the anchor tags
+						//webFrame.contentDocument.body.textContent = anchorTags;
+						setTimeout(() => {
+							webFrame.contentDocument.body.innerHTML = anchorTags;
+						}, 100);
+				
+						// Update iframe content with the img tags
+						//webFrame.contentDocument.body.innerHTML = imgTags;
+						//webFrame.contentDocument.body.textContent = commaSeparatedList;
+						//webFrame.contentDocument.body.innerHTML = data;
+				   })
+				   .catch(error => {
+						console.error('Response: ',response);
+					   console.error('Error fetching image URLs:', error);
+				   });
+			}	
+			else {
+				webFrame.contentDocument.body.innerHTML = '<p>Loading is disabled.</p>';
+			}
+			   
+		}
+
+		function handleFrameError() {
+			const webFrame = document.getElementById('webFrame');
+			webFrame.src = ''; // Clear the src to stop loading
+			webFrame.style.backgroundColor = '#fff'; // Set background color
+			webFrame.contentDocument.body.innerHTML = '<p>Unable to load the content.</p>';
+		}
+		
+        updateDisplays();
+    </script>
+</body>
+</html>

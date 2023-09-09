@@ -1,0 +1,76 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: #f0f0f0;
+  height: 50px;
+}
+
+.tab {
+  cursor: pointer;
+}
+
+.content {
+  display: flex;
+  width: 100%;
+}
+
+.content-right {
+  flex: 1;
+  display: none;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f0f0f0;
+}
+
+.content-left {
+  flex: 1;
+  display: flex;
+  background-color: #e0e0e0;
+}
+
+.left-arrow {
+  /* Other styles */
+  position: fixed;
+  left: 0;
+  background-color: lightgreen; /* Set the color to light green */
+}
+
+.right-arrow {
+  /* Other styles */
+  position: fixed;
+  right: 0;
+  background-color: lightcoral; /* Set the color to light coral */
+}
+
+.arrow {
+  flex: 0 0 5%;
+  height: 100vh; /* Set the height to 100% of the viewport height */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.left-arrow:hover,
+.right-arrow:hover {
+  background-color: #ccc;
+}
+
+.gallery-middle {
+  width: 90vw;
+  flex: 1;
+  overflow: auto;
+  padding: 0px;
+}
+
+.staticContent {
+  /* Other styles */
+  margin: 0 auto; /* Center the content horizontally */
+}
